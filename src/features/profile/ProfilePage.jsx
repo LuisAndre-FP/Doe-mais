@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
-import { useSession } from "../hooks/useSession";
+import { supabase } from "../../lib/supabaseClient";
+import { useSession } from "../../hooks/useSession";
 
 export default function Perfil() {
   const { user, loading } = useSession();

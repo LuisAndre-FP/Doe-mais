@@ -1,11 +1,12 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useSession } from "../hooks/useSession";
 
-export default function ProtectedRoute({ children }) {
-  const { user, loading } = useSession();
+export default function ProtectedRoute() {
+  const { session, loading } = useSession();
 
-  if (loading) return null; 
-  if (!user) return <Navigate to="/login" replace />;
+  if (loading) return <div className="p-6">Carregando...</div>;
 
-  return children;
+  if (!session) return <Navigate to="/login" replace />;
+
+  return <Outlet />;
 }
