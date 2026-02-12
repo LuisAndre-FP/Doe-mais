@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -11,7 +11,8 @@ export default function Login() {
       const userEmail = data.session?.user?.email ?? "";
       setEmail(userEmail);
 
-      if (data.session) navigate("/dashboard");
+      if (data.session) navigate("/doacoes", { replace: true });
+
     });
   }, [navigate]);
 
