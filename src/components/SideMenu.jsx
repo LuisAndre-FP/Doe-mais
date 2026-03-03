@@ -1,84 +1,126 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { Heart, PlusCircle, History, User, LogOut, Shield } from "lucide-react";
+import { getMyRole } from "../features/admin/adminService";
 
-export default function SideMenu({ open, onClose }) {
-  const panelRef = useRef(null);
+function Item({ to, label, icon: Icon, disabled = false }) {
+  const base =
+    "group relative w-12 h-12 rounded-2xl grid place-items-center transition";
+  const active =
+    "bg-white/15 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]";
+  const idle = "text-white/80 hover:bg-white/10";
+  const iconCls = "h-5 w-5";
+
+  if (disabled) {
+    return (
+      <div className={`${base} opacity-40 cursor-not-allowed`}>
+        <Icon className={iconCls} />
+      </div>
+    );
+  }
+
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) => `${base} ${isActive ? active : idle}`}
+    >
+      {({ isActive }) => (
+        <>
+          <Icon className={iconCls} />
+
+          {/* Tooltip (KTO-style) */}
+          <div
+            className={[
+              "pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3",
+              "opacity-0 translate-x-[-4px] group-hover:opacity-100 group-hover:translate-x-0",
+              "transition duration-150",
+            ].join(" ")}
+          >
+            <div className="px-3 py-2 rounded-xl bg-black/80 text-white text-xs font-semibold whitespace-nowrap shadow-lg border border-white/10">
+              {label}
+            </div>
+          </div>
+        </>
+      )}
+    </NavLink>
+  );
+}
+
+export default function SideMenu({ open = true }) {
+  const [role, setRole] = useState("USER");
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!open) return;
-
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
+    const run = async () => {
+      const { data, error } = await getMyRole();
+      if (!error && data) setRole(data);
     };
+    run();
+  }, []);
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
+  const links = useMemo(() => {
+    const baseLinks = [
+      { to: "/doacoes", label: "Fazer Doação", icon: PlusCircle },
+      { to: "/minhas-doacoes", label: "Minhas Doações", icon: Heart },
+    ];
 
-  const linkClass = ({ isActive }) =>
-    `block w-full px-4 py-3 rounded-xl font-semibold transition ${
-      isActive ? "bg-emerald-600 text-white" : "text-slate-700 hover:bg-emerald-100"
-    }`;
+    if (role === "ADMIN") {
+      baseLinks.push({
+        to: "/admin",
+        label: "Gerenciamento",
+        icon: Shield,
+      });
+    }
+
+    baseLinks.push(
+      { to: "/historico", label: "Histórico", icon: History },
+      { to: "/perfil", label: "Meu Perfil", icon: User },
+    );
+
+    return baseLinks;
+  }, [role]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    onClose();
     navigate("/login", { replace: true });
   };
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50">
-      {/* overlay (clicar fora fecha) */}
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-      />
+    <aside
+      className={[
+        "fixed left-0 z-40",
+        "top-16 h-[calc(100vh-64px)] w-16",
+        "transition-transform duration-200 ease-out",
+        open ? "translate-x-0" : "-translate-x-full",
+        // mesma “família” do header
+        "bg-gradient-to-b from-emerald-950 via-emerald-900 to-emerald-950",
+        "border-r border-white/10",
+      ].join(" ")}
+    >
+      <nav className="pt-4 flex flex-col items-center gap-2">
+        {links.map((l) => (
+          <Item key={l.to} {...l} />
+        ))}
+      </nav>
 
-      {/* painel */}
-      <aside
-        ref={panelRef}
-        className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl p-4"
-        onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-extrabold text-emerald-600">DOE+</h2>
+      {/* Logout fixo embaixo */}
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="group relative w-12 h-12 rounded-2xl grid place-items-center text-white/70 hover:text-white hover:bg-white/10 transition"
+          aria-label="Sair"
+        >
+          <LogOut className="h-5 w-5" />
 
-          <button
-            onClick={onClose}
-            className="h-10 w-10 rounded-xl hover:bg-slate-100 grid place-items-center"
-            aria-label="Fechar menu"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <NavLink to="/doacoes" className={linkClass} onClick={onClose}>
-            Doações
-          </NavLink>
-
-          <NavLink to="/historico" className={linkClass} onClick={onClose}>
-            Histórico
-          </NavLink>
-
-          <NavLink to="/perfil" className={linkClass} onClick={onClose}>
-            Perfil
-          </NavLink>
-        </div>
-
-        <div className="mt-6 pt-4 border-t">
-          <button
-            onClick={handleLogout}
-            className="w-full px-4 py-3 rounded-xl bg-red-500 text-white font-semibold hover:opacity-90 transition"
-          >
-            Sair
-          </button>
-        </div>
-      </aside>
-    </div>
+          <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 opacity-0 translate-x-[-4px] group-hover:opacity-100 group-hover:translate-x-0 transition duration-150">
+            <div className="px-3 py-2 rounded-xl bg-black/80 text-white text-xs font-semibold whitespace-nowrap shadow-lg border border-white/10">
+              Sair
+            </div>
+          </div>
+        </button>
+      </div>
+    </aside>
   );
 }
