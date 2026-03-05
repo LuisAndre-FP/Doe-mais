@@ -12,26 +12,42 @@ function formatDateBR(date) {
 
 function StatusBadge({ status }) {
   const styles = {
-    PENDENTE: "bg-amber-50 text-amber-700 border-amber-200",
-    AGENDADA: "bg-blue-50 text-blue-700 border-blue-200",
-    COLETADA: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    PENDENTE: "bg-amber-100 text-amber-700",
+    AGENDADA: "bg-blue-100 text-blue-700",
+    COLETADA: "bg-emerald-100 text-emerald-700",
   };
-  const cls = styles[status] ?? "bg-slate-50 text-slate-700 border-slate-200";
+
+  const label = status ?? "-";
+  const cls = styles[status] ?? "bg-slate-100 text-slate-700";
+
   return (
     <span
-      className={`inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold ${cls}`}
+      className={[
+        "inline-flex items-center justify-center",
+        "h-7 px-3 rounded-full",
+        "text-[11px] font-extrabold tracking-wide uppercase",
+        cls,
+      ].join(" ")}
     >
-      {status}
+      {label}
     </span>
   );
 }
 
 function DonationCard({ d, photoUrl }) {
+  const metaTop = `${d.quantidade ?? "-"} UN • ${d.estado_item ?? "-"}`;
+
   return (
-    <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5">
-      <div className="flex items-start gap-4">
-        {/* foto */}
-        <div className="h-20 w-20 rounded-2xl bg-emerald-50 border border-emerald-100 overflow-hidden grid place-items-center shrink-0">
+    <div
+      className={[
+        "rounded-[28px] bg-white",
+        "border border-slate-200/60",
+        "shadow-[0_10px_30px_-20px_rgba(2,6,23,0.35)]",
+        "px-6 py-5",
+      ].join(" ")}
+    >
+      <div className="flex items-center gap-5">
+        <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
           {photoUrl ? (
             <img
               src={photoUrl}
@@ -39,51 +55,84 @@ function DonationCard({ d, photoUrl }) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <span className="text-xs text-slate-400 text-center px-2">
+            <div className="h-full w-full grid place-items-center text-[11px] text-slate-400 font-semibold">
               Sem foto
-            </span>
+            </div>
           )}
         </div>
 
-        {/* infos */}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <StatusBadge status={d.status} />
-            <span className="text-xs text-slate-400">
-              {formatDateBR(d.created_at)}
-            </span>
-            <span className="text-xs text-slate-400">
-              Quantidade: {d.quantidade}
-            </span>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="text-[17px] font-extrabold text-slate-900 truncate">
+                {d.descricao}
+              </h3>
+
+              <p className="mt-0.5 text-[12px] font-bold tracking-wide text-slate-400 uppercase">
+                {metaTop}
+              </p>
+            </div>
+
+            <div className="shrink-0">
+              <StatusBadge status={d.status} />
+            </div>
           </div>
 
-          <h3 className="mt-2 text-lg font-extrabold text-slate-900 truncate">
-            {d.descricao}
-          </h3>
-
-          <p className="mt-1 text-sm text-slate-600">
-            Estado: <b>{d.estado_item ?? "-"}</b>
-          </p>
-
-          {/* se estiver agendada, mostra coleta + obs */}
           {d.status === "AGENDADA" && d.coleta_data ? (
-            <p className="mt-2 text-sm text-slate-600">
-              <span className="font-semibold">Coleta:</span>{" "}
-              <b>
-                {formatDateBR(d.coleta_data)}
-                {d.coleta_periodo ? ` • ${d.coleta_periodo}` : ""}
-              </b>
-            </p>
-          ) : null}
+            <div className="mt-2 text-sm text-slate-600">
+              <p>
+                <span className="font-semibold">Coleta:</span>{" "}
+                <span className="font-extrabold text-slate-800">
+                  {formatDateBR(d.coleta_data)}
+                  {d.coleta_periodo ? ` • ${d.coleta_periodo}` : ""}
+                </span>
+              </p>
 
-          {d.status === "AGENDADA" && d.coleta_observacao ? (
-            <p className="mt-1 text-sm text-slate-600">
-              <span className="font-semibold">Observação:</span>{" "}
-              {d.coleta_observacao}
-            </p>
+              {d.coleta_observacao ? (
+                <p className="mt-1">
+                  <span className="font-semibold">Observação:</span>{" "}
+                  {d.coleta_observacao}
+                </p>
+              ) : null}
+            </div>
           ) : null}
         </div>
       </div>
+    </div>
+  );
+}
+
+
+function StatusTabs({ value, onChange }) {
+  const tabs = [
+    { value: "ALL", label: "Todos" },
+    { value: "PENDENTE", label: "Pendente" },
+    { value: "AGENDADA", label: "Agendada" },
+    { value: "COLETADA", label: "Coletada" },
+  ];
+
+  return (
+    <div className="inline-flex rounded-2xl bg-white border border-emerald-200 shadow-sm p-1">
+      {tabs.map((t) => {
+        const active = value === t.value;
+        return (
+          <button
+            key={t.value}
+            type="button"
+            onClick={() => onChange(t.value)}
+            className={[
+              "h-9 px-4 rounded-xl",
+              "text-[11px] font-extrabold tracking-widest uppercase",
+              "transition",
+              active
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50",
+            ].join(" ")}
+          >
+            {t.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -110,7 +159,6 @@ export default function DonationsMyPage() {
     load();
   }, []);
 
-  // signed urls das fotos
   useEffect(() => {
     const run = async () => {
       const missing = (donations ?? [])
@@ -133,8 +181,6 @@ export default function DonationsMyPage() {
   const filtered = useMemo(() => {
     const arr = donations ?? [];
     if (statusFilter === "ALL") return arr;
-
-    // aqui o user pode filtrar por qualquer status
     return arr.filter((d) => d.status === statusFilter);
   }, [donations, statusFilter]);
 
@@ -145,17 +191,9 @@ export default function DonationsMyPage() {
         subtitle="Visualize, organize e acompanhe suas doações."
       />
 
+      {/* TROCA DO SELECT PELOS TABS */}
       <div className="mt-6">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-11 rounded-2xl border px-4 bg-white font-semibold"
-        >
-          <option value="ALL">Todas</option>
-          <option value="PENDENTE">Pendentes</option>
-          <option value="AGENDADA">Agendadas</option>
-          <option value="COLETADA">Coletadas</option>
-        </select>
+        <StatusTabs value={statusFilter} onChange={setStatusFilter} />
       </div>
 
       {errorMsg ? (

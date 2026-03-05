@@ -7,6 +7,87 @@ function formatDateBR(date) {
   return new Date(date).toLocaleDateString("pt-BR");
 }
 
+function StatusBadge({ status }) {
+  const styles = {
+    COLETADA: "bg-emerald-100 text-emerald-700",
+    PENDENTE: "bg-amber-100 text-amber-700",
+    AGENDADA: "bg-blue-100 text-blue-700",
+  };
+
+  const cls = styles[status] ?? "bg-slate-100 text-slate-700";
+
+  return (
+    <span
+      className={[
+        "inline-flex items-center justify-center",
+        "h-7 px-3 rounded-full",
+        "text-[11px] font-extrabold tracking-wide uppercase",
+        cls,
+      ].join(" ")}
+    >
+      {status}
+    </span>
+  );
+}
+
+function DonationHistoryCard({ d, photoUrl }) {
+  const metaTop = `${d.quantidade ?? "-"} UN • ${d.estado_item ?? "-"}`;
+
+  return (
+    <div
+      className={[
+        "rounded-[28px] bg-white",
+        "border border-slate-200/60",
+        "shadow-[0_10px_30px_-20px_rgba(2,6,23,0.35)]",
+        "px-6 py-5",
+      ].join(" ")}
+    >
+      <div className="flex items-center gap-5">
+        {/* foto */}
+        <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt="Foto do item"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full grid place-items-center text-[11px] text-slate-400 font-semibold">
+              Sem foto
+            </div>
+          )}
+        </div>
+
+        {/* infos */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="text-[17px] font-extrabold text-slate-900 truncate">
+                {d.descricao}
+              </h3>
+
+              <p className="mt-0.5 text-[12px] font-bold tracking-wide text-slate-400 uppercase">
+                {metaTop}
+              </p>
+
+              <p className="mt-2 text-sm text-slate-600">
+                <span className="font-semibold">Coletada em:</span>{" "}
+                <span className="font-extrabold text-slate-800">
+                  {formatDateBR(d.updated_at)}
+                </span>
+              </p>
+            </div>
+
+            <div className="shrink-0">
+              <StatusBadge status="COLETADA" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DonationsHistoryPage() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,9 +115,10 @@ export default function DonationsHistoryPage() {
     load();
   }, []);
 
+  // signed urls das fotos
   useEffect(() => {
     const run = async () => {
-      const missing = donations
+      const missing = (donations ?? [])
         .map((d) => d.foto_path)
         .filter(Boolean)
         .filter((path) => !photoUrlMap[path]);
@@ -49,8 +131,9 @@ export default function DonationsHistoryPage() {
       }
     };
 
-    if (donations.length > 0) run();
-  }, [donations, photoUrlMap]);
+    if ((donations ?? []).length > 0) run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [donations]);
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-6">
@@ -66,9 +149,7 @@ export default function DonationsHistoryPage() {
       ) : null}
 
       {loading ? (
-        <div className="mt-6 bg-white rounded-2xl border p-6">
-          Carregando...
-        </div>
+        <div className="mt-6 bg-white rounded-2xl border p-6">Carregando...</div>
       ) : donations.length === 0 ? (
         <div className="mt-6 bg-white rounded-2xl border p-6 text-center">
           <p className="font-bold text-slate-900">
@@ -77,52 +158,16 @@ export default function DonationsHistoryPage() {
         </div>
       ) : (
         <div className="mt-6 grid gap-4">
-          {donations.map((d) => (
-            <div
-              key={d.id}
-              className="bg-white rounded-2xl border shadow-sm p-5"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-extrabold text-slate-900">
-                    {d.descricao}
-                  </h3>
-
-                  <div className="mt-2 text-sm text-slate-600 flex flex-wrap gap-x-6 gap-y-1">
-                    <span>
-                      <span className="font-semibold">Quantidade:</span> {d.quantidade}
-                    </span>
-
-                    {d.estado_item && (
-                      <span>
-                        <span className="font-semibold">Estado:</span>{" "}
-                        {d.estado_item}
-                      </span>
-                    )}
-
-                    <span>
-                      <span className="font-semibold">Coletada em:</span>{" "}
-                      {formatDateBR(d.updated_at)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="h-20 w-20 rounded-2xl bg-emerald-50 border overflow-hidden grid place-items-center">
-                  {d.foto_path && photoUrlMap[d.foto_path] ? (
-                    <img
-                      src={photoUrlMap[d.foto_path]}
-                      alt="Foto"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-xs text-slate-400 text-center">
-                      Sem foto
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+          {donations
+            .slice()
+            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+            .map((d) => (
+              <DonationHistoryCard
+                key={d.id}
+                d={d}
+                photoUrl={d.foto_path ? photoUrlMap[d.foto_path] : null}
+              />
+            ))}
         </div>
       )}
     </div>

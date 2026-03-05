@@ -6,21 +6,212 @@ import {
 } from "./adminDonationsServices";
 import PageHeader from "../../components/PageHeader";
 import { getDonationPhotoSignedUrl } from "../donations/donationsService";
-import { MapPin, Phone, User2, CalendarDays } from "lucide-react";
+import { MapPin, Phone, CalendarDays } from "lucide-react";
 
 function StatusBadge({ status }) {
   const styles = {
-    PENDENTE: "bg-amber-50 text-amber-700 border-amber-200",
-    AGENDADA: "bg-blue-50 text-blue-700 border-blue-200",
-    COLETADA: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    PENDENTE: "bg-amber-100 text-amber-700",
+    AGENDADA: "bg-blue-100 text-blue-700",
+    COLETADA: "bg-emerald-100 text-emerald-700",
   };
-  const cls = styles[status] ?? "bg-slate-50 text-slate-700 border-slate-200";
+
+  const cls = styles[status] ?? "bg-slate-100 text-slate-700";
+
   return (
     <span
-      className={`inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold ${cls}`}
+      className={[
+        "inline-flex items-center justify-center",
+        "h-7 px-3 rounded-full",
+        "text-[11px] font-extrabold tracking-widest uppercase",
+        cls,
+      ].join(" ")}
     >
       {status}
     </span>
+  );
+}
+
+function StatusTabs({ value, onChange }) {
+  const tabs = [
+    { value: "ALL", label: "Todos" },
+    { value: "PENDENTE", label: "Pendente" },
+    { value: "AGENDADA", label: "Agendada" },
+    { value: "COLETADA", label: "Coletada" },
+  ];
+
+  return (
+    <div className="inline-flex rounded-2xl bg-white border border-emerald-200 shadow-sm p-1">
+      {tabs.map((t) => {
+        const active = value === t.value;
+        return (
+          <button
+            key={t.value}
+            type="button"
+            onClick={() => onChange(t.value)}
+            className={[
+              "h-9 px-4 rounded-xl",
+              "text-[11px] font-extrabold tracking-widest uppercase",
+              "transition",
+              active
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50",
+            ].join(" ")}
+          >
+            {t.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function AdminDonationCard({
+  d,
+  imgUrl,
+  donorName,
+  donorPhone,
+  donorAddress,
+  onSchedule,
+  onCollect,
+  fmtDate,
+  periodoLabel,
+}) {
+  const isScheduled = d.status === "AGENDADA";
+
+  return (
+    <div className="rounded-[32px] bg-white border border-slate-100 shadow-sm p-6">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* IMAGEM GRANDE */}
+        <div className="relative w-full md:w-[260px] h-[170px] rounded-[28px] overflow-hidden bg-slate-50 border border-slate-100">
+          {imgUrl ? (
+            <img
+              src={imgUrl}
+              alt="Foto do item"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full grid place-items-center text-slate-400 text-sm font-semibold">
+              Sem foto
+            </div>
+          )}
+
+          {/* badge por cima */}
+          <div className="absolute top-3 left-3">
+            <StatusBadge status={d.status} />
+          </div>
+        </div>
+
+        {/* CONTEÚDO */}
+        <div className="min-w-0 flex-1">
+          {/* topo: título + qtd */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h3 className="text-2xl font-extrabold text-slate-900 truncate">
+                {d.descricao}
+              </h3>
+
+              <p className="mt-1 text-xs font-extrabold tracking-widest text-slate-400 uppercase">
+                Doador:{" "}
+                <span className="tracking-normal text-slate-700 font-bold normal-case">
+                  {donorName}
+                </span>
+              </p>
+            </div>
+
+            <span className="shrink-0 rounded-2xl bg-slate-50 border border-slate-100 px-3 py-2 text-xs font-extrabold text-slate-700">
+              QTD: {d.quantidade}
+            </span>
+          </div>
+
+          {/* infos */}
+          <div className="mt-4 grid gap-3 text-sm">
+            <div className="flex items-start gap-2 text-slate-600">
+              <MapPin className="h-4 w-4 mt-0.5 text-slate-400" />
+              <div className="min-w-0">
+                <p className="text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
+                  Endereço de coleta
+                </p>
+                <p className="font-semibold text-slate-700 truncate">
+                  {donorAddress}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2 text-slate-600">
+              <Phone className="h-4 w-4 mt-0.5 text-slate-400" />
+              <div>
+                <p className="text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
+                  Telefone
+                </p>
+                <p className="font-semibold text-slate-700">{donorPhone}</p>
+              </div>
+            </div>
+
+            {isScheduled && d.coleta_data ? (
+              <div className="flex items-start gap-2 text-slate-600">
+                <CalendarDays className="h-4 w-4 mt-0.5 text-slate-400" />
+                <div>
+                  <p className="text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
+                    Coleta agendada
+                  </p>
+                  <p className="font-semibold text-blue-700">
+                    {fmtDate(d.coleta_data)} ({periodoLabel(d.coleta_periodo)})
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
+            {isScheduled && d.coleta_observacao ? (
+              <div className="mt-2 text-sm text-slate-600">
+                <span className="font-extrabold text-slate-700">
+                  Observação:
+                </span>{" "}
+                {d.coleta_observacao}
+              </div>
+            ) : null}
+          </div>
+
+          {/* botões */}
+          <div className="mt-6 flex flex-wrap gap-3">
+            {d.status === "PENDENTE" ? (
+              <button
+                type="button"
+                onClick={onSchedule}
+                className="h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
+              >
+                AGENDAR COLETA
+              </button>
+            ) : null}
+
+            {d.status === "AGENDADA" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={onCollect}
+                  className="h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
+                >
+                  MARCAR COMO COLETADA
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onSchedule}
+                  className="h-11 px-6 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-extrabold hover:bg-slate-100"
+                >
+                  REAGENDAR
+                </button>
+              </>
+            ) : null}
+
+            {d.status === "COLETADA" ? (
+              <span className="text-sm font-bold text-slate-400">
+                Finalizada em {fmtDate(d.updated_at || d.created_at)}
+              </span>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -178,10 +369,8 @@ export default function AdminDonationsPage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // fotos
   const [photoUrlMap, setPhotoUrlMap] = useState({});
 
-  // modal agendar
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
 
@@ -190,7 +379,6 @@ export default function AdminDonationsPage() {
   const [coletaObs, setColetaObs] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // toast
   const [toast, setToast] = useState({
     open: false,
     type: "success",
@@ -203,7 +391,6 @@ export default function AdminDonationsPage() {
   };
   const closeToast = () => setToast((prev) => ({ ...prev, open: false }));
 
-  // confirm simples (coletada)
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [toCollect, setToCollect] = useState(null);
   const [collecting, setCollecting] = useState(false);
@@ -213,10 +400,10 @@ export default function AdminDonationsPage() {
     p === "MANHA"
       ? "Manhã"
       : p === "TARDE"
-        ? "Tarde"
-        : p === "NOITE"
-          ? "Noite"
-          : p;
+      ? "Tarde"
+      : p === "NOITE"
+      ? "Noite"
+      : p;
 
   const load = async () => {
     setErrorMsg("");
@@ -307,7 +494,6 @@ export default function AdminDonationsPage() {
     load();
   };
 
-  // abre confirm simples
   const setCollected = (d) => {
     setToCollect(d);
     setConfirmOpen(true);
@@ -319,14 +505,11 @@ export default function AdminDonationsPage() {
     setToCollect(null);
   };
 
-  // confirma finalização
   const confirmCollected = async () => {
     if (!toCollect) return;
 
     setCollecting(true);
-
     const { error } = await markAsCollected(toCollect.id);
-
     setCollecting(false);
 
     if (error) {
@@ -356,17 +539,9 @@ export default function AdminDonationsPage() {
         subtitle="Controle e organize todas as solicitações de doações."
       />
 
+      {/* TROCA DO SELECT PELOS TABS */}
       <div className="mt-6">
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="h-11 rounded-2xl border px-4 bg-white font-semibold"
-        >
-          <option value="ALL">Todas</option>
-          <option value="PENDENTE">Pendentes</option>
-          <option value="AGENDADA">Agendadas</option>
-          <option value="COLETADA">Coletadas</option>
-        </select>
+        <StatusTabs value={status} onChange={setStatus} />
       </div>
 
       {errorMsg ? (
@@ -383,126 +558,32 @@ export default function AdminDonationsPage() {
 
       {!loading && donations.length === 0 ? (
         <div className="mt-6 rounded-2xl bg-white border p-6 text-center">
-          <p className="font-bold text-slate-900">
-            Nenhuma doação nesse filtro
-          </p>
+          <p className="font-bold text-slate-900">Nenhuma doação nesse filtro</p>
         </div>
       ) : null}
 
       {!loading && donations.length > 0 ? (
-        <div className="mt-6 grid gap-4">
+        <div className="mt-6 grid gap-5">
           {donations.map((d) => {
             const p = d.profiles;
             const donorName = p?.nome ?? "Doador";
             const donorPhone = p?.telefone ?? "-";
             const donorAddress = p?.endereco ?? "-";
-
             const imgUrl = d.foto_path ? photoUrlMap[d.foto_path] : null;
 
             return (
-              <div
+              <AdminDonationCard
                 key={d.id}
-                className="rounded-2xl bg-white border shadow-sm p-5"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex gap-4 min-w-0">
-                    <div className="h-24 w-24 rounded-2xl bg-emerald-50 border overflow-hidden grid place-items-center shrink-0">
-                      {imgUrl ? (
-                        <img
-                          src={imgUrl}
-                          alt="Foto"
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-xs text-slate-400 text-center px-2">
-                          Sem foto
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <StatusBadge status={d.status} />
-                        <span className="text-xs text-slate-400">
-                          {fmtDate(d.created_at)}
-                        </span>
-                        <span className="text-xs text-slate-400 font-semibold">
-                          Quantidade: {d.quantidade}
-                        </span>
-                      </div>
-
-                      <h3 className="mt-3 text-lg font-extrabold text-slate-900 truncate">
-                        {d.descricao}
-                      </h3>
-
-                      <div className="mt-3 grid gap-2 text-sm text-slate-600">
-                        <div className="flex items-center gap-2">
-                          <User2 className="h-4 w-4 text-slate-400" />
-                          <span className="font-semibold text-slate-700">
-                            {donorName}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-slate-400" />
-                          <span>{donorPhone}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-slate-400" />
-                          <span className="truncate">{donorAddress}</span>
-                        </div>
-
-                        {d.status === "AGENDADA" && d.coleta_data ? (
-                          <div className="flex items-center gap-2">
-                            <CalendarDays className="h-4 w-4 text-slate-400" />
-                            <span>
-                              <span className="font-semibold">Coleta:</span>{" "}
-                              {fmtDate(d.coleta_data)} •{" "}
-                              {periodoLabel(d.coleta_periodo)}
-                            </span>
-                          </div>
-                        ) : null}
-
-                        {d.coleta_observacao ? (
-                          <div className="text-sm text-slate-500">
-                            <span className="font-semibold text-slate-600">
-                              Obs:
-                            </span>{" "}
-                            {d.coleta_observacao}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="shrink-0 flex flex-col gap-2">
-                    {d.status !== "COLETADA" ? (
-                      <button
-                        type="button"
-                        onClick={() => openSchedule(d)}
-                        className="h-10 px-4 rounded-2xl border font-semibold hover:bg-slate-50"
-                      >
-                        {d.status === "AGENDADA" ? "Reagendar" : "Agendar"}
-                      </button>
-                    ) : null}
-
-                    {d.status !== "COLETADA" ? (
-                      <button
-                        type="button"
-                        onClick={() => setCollected(d)}
-                        className="h-10 px-4 rounded-2xl bg-emerald-700 text-white font-semibold hover:bg-emerald-800"
-                      >
-                        Marcar coletada
-                      </button>
-                    ) : (
-                      <span className="text-xs text-slate-400 text-center">
-                        Finalizada
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
+                d={d}
+                imgUrl={imgUrl}
+                donorName={donorName}
+                donorPhone={donorPhone}
+                donorAddress={donorAddress}
+                onSchedule={() => openSchedule(d)}
+                onCollect={() => setCollected(d)}
+                fmtDate={fmtDate}
+                periodoLabel={periodoLabel}
+              />
             );
           })}
         </div>
