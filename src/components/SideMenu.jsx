@@ -1,84 +1,103 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { Heart, PlusCircle, History, User, LogOut, Shield } from "lucide-react";
+import { getMyRole } from "../features/admin/adminService";
 
-export default function SideMenu({ open, onClose }) {
-  const panelRef = useRef(null);
+function MenuItem({ to, label, icon: Icon }) {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        [
+          "w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200",
+          "font-bold text-[15px]",
+          isActive
+            ? "bg-[#dceee7] text-[#0b7a57] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
+            : "text-[#34584c] hover:text-[#0b7a57] hover:bg-[#eaf4ef]",
+        ].join(" ")
+      }
+    >
+      <Icon className="h-5 w-5 shrink-0" />
+      <span className="truncate">{label}</span>
+    </NavLink>
+  );
+}
+
+export default function SideMenu() {
+  const [role, setRole] = useState("USER");
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!open) return;
-
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
+    const run = async () => {
+      const { data, error } = await getMyRole();
+      if (!error && data) setRole(data);
     };
+    run();
+  }, []);
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
+  const links = useMemo(() => {
+    const items = [
+      { to: "/doacoes", label: "Fazer Doação", icon: PlusCircle },
+      { to: "/minhas-doacoes", label: "Minhas Doações", icon: Heart },
+    ];
 
-  const linkClass = ({ isActive }) =>
-    `block w-full px-4 py-3 rounded-xl font-semibold transition ${
-      isActive ? "bg-emerald-600 text-white" : "text-slate-700 hover:bg-emerald-100"
-    }`;
+    if (role === "ADMIN") {
+      items.push({
+        to: "/admin",
+        label: "Gerenciamento",
+        icon: Shield,
+      });
+    }
+
+    items.push(
+      { to: "/historico", label: "Histórico", icon: History },
+      { to: "/perfil", label: "Meu Perfil", icon: User },
+    );
+
+    return items;
+  }, [role]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    onClose();
     navigate("/login", { replace: true });
   };
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50">
-      {/* overlay (clicar fora fecha) */}
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-      />
+    <aside
+      className={[
+        "fixed left-0 top-0 z-40",
+        "w-72 h-screen",
+        "bg-[#f3f5f4]",
+        "text-[#234338]",
+        "border-r border-[#e3ebe7]",
+        "shadow-[8px_0_24px_-18px_rgba(0,0,0,0.12)]",
+      ].join(" ")}
+    >
+      <div className="h-16 px-6 flex items-center border-b border-[#e3ebe7]">
+        <span className="text-lg font-extrabold tracking-tight text-[#0b7a57]">
+          DOE+
+        </span>
+      </div>
 
-      {/* painel */}
-      <aside
-        ref={panelRef}
-        className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl p-4"
-        onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-extrabold text-emerald-600">DOE+</h2>
+      <div className="px-4 py-5 h-[calc(100vh-64px)] flex flex-col">
+        <nav className="space-y-2">
+          {links.map((item) => (
+            <MenuItem key={item.to} {...item} />
+          ))}
+        </nav>
 
+        <div className="mt-auto pt-6">
           <button
-            onClick={onClose}
-            className="h-10 w-10 rounded-xl hover:bg-slate-100 grid place-items-center"
-            aria-label="Fechar menu"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <NavLink to="/doacoes" className={linkClass} onClick={onClose}>
-            Doações
-          </NavLink>
-
-          <NavLink to="/historico" className={linkClass} onClick={onClose}>
-            Histórico
-          </NavLink>
-
-          <NavLink to="/perfil" className={linkClass} onClick={onClose}>
-            Perfil
-          </NavLink>
-        </div>
-
-        <div className="mt-6 pt-4 border-t">
-          <button
+            type="button"
             onClick={handleLogout}
-            className="w-full px-4 py-3 rounded-xl bg-red-500 text-white font-semibold hover:opacity-90 transition"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[#34584c] hover:text-[#0b7a57] hover:bg-[#eaf4ef] transition-all duration-200 font-bold text-[15px]"
           >
-            Sair
+            <LogOut className="h-5 w-5 shrink-0" />
+            <span>Sair</span>
           </button>
         </div>
-      </aside>
-    </div>
+      </div>
+    </aside>
   );
 }

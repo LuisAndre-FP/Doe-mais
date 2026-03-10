@@ -1,19 +1,20 @@
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
 import Header from "../components/Header";
 import SideMenu from "../components/SideMenu";
 
 export default function AppLayout() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
-    <div className="min-h-screen bg-emerald-50 w-full">
-      <Header onOpenMenu={() => setMenuOpen(true)} />
-      <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+    <div className="min-h-screen bg-[#f3f5f4]">
+      <Header />
+      <SideMenu />
 
-      <main className="w-full p-6">
-        <Outlet />
-      </main>
+      <div className="ml-72 min-h-screen">
+        <main className="px-6 pt-4 pb-6 flex justify-center">
+          <div className="w-full max-w-5xl">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

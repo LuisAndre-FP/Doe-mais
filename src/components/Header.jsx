@@ -1,22 +1,24 @@
-export default function Header({ onOpenMenu }) {
+import { Link } from "react-router-dom";
+
+export default function Header() {
   return (
-    <header className="w-full bg-white shadow-sm border-b">
-      <div className="w-full px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onOpenMenu}
-            className="h-10 w-10 rounded-xl hover:bg-slate-100 grid place-items-center"
-            aria-label="Abrir menu"
-          >
-            ☰
-          </button>
-
-          <h1 className="text-2xl font-extrabold text-emerald-600 tracking-tight">
-            DOE+
-          </h1>
-        </div>
-
-        {/* opcional: pode ter algo do lado direito */}
+    <header
+      className={[
+        "fixed top-0 left-0 z-50",
+        "w-72 h-16",
+        "bg-gradient-to-br from-[#0b7a57] to-[#075c42]",
+        "border-r border-black/5",
+        "shadow-[0_10px_24px_-18px_rgba(0,0,0,0.28)]",
+      ].join(" ")}
+    >
+      <div className="h-full flex items-center justify-center">
+        <Link to="/" className="inline-flex items-center">
+          <img
+            src="doemais.svg"
+            alt="Doe+ logo"
+            className="h-9 w-auto"
+          />
+        </Link>
       </div>
     </header>
   );
