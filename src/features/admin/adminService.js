@@ -15,6 +15,5 @@ export async function getMyRole() {
 
   if (error) return { data: null, error };
 
-  // 🔥 garante string limpa
   return { data: String(data?.role ?? "").trim(), error: null };
 }

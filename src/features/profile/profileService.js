@@ -8,7 +8,10 @@ export async function getProfile(userId) {
     .single();
 }
 
-export async function updateProfile(userId, { nome, telefone, endereco, profile_completed }) {
+export async function updateProfile(
+  userId,
+  { nome, telefone, endereco, profile_completed },
+) {
   return supabase
     .from("profiles")
     .update({ nome, telefone, endereco, profile_completed })

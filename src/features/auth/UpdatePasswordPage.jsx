@@ -16,7 +16,8 @@ export default function UpdatePasswordPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) setErrorMsg("Link inválido ou expirado. Solicite novamente.");
+      if (!data.session)
+        setErrorMsg("Link inválido ou expirado. Solicite novamente.");
     });
   }, []);
 
@@ -25,7 +26,8 @@ export default function UpdatePasswordPage() {
     setErrorMsg("");
     setSuccessMsg("");
 
-    if (password.length < 6) return setErrorMsg("A senha deve ter pelo menos 6 caracteres.");
+    if (password.length < 6)
+      return setErrorMsg("A senha deve ter pelo menos 6 caracteres.");
     if (password !== confirm) return setErrorMsg("As senhas não conferem.");
 
     setIsLoading(true);

@@ -1,7 +1,8 @@
 import { supabase } from "../../lib/supabaseClient";
 
 export async function loginWithGoogle() {
-  return supabase.auth.signInWithOAuth({ provider: "google",
+  return supabase.auth.signInWithOAuth({
+    provider: "google",
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
     },
@@ -13,7 +14,6 @@ export async function loginWithEmail(email, password) {
 }
 
 export async function registerWithEmail(email, password) {
-  // email confirmation: Supabase envia automaticamente se estiver habilitado
   return supabase.auth.signUp({ email, password });
 }
 

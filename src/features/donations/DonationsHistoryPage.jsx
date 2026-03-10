@@ -43,7 +43,6 @@ function DonationHistoryCard({ d, photoUrl }) {
       ].join(" ")}
     >
       <div className="flex items-center gap-5">
-        {/* foto */}
         <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
           {photoUrl ? (
             <img
@@ -58,7 +57,6 @@ function DonationHistoryCard({ d, photoUrl }) {
           )}
         </div>
 
-        {/* infos */}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -115,7 +113,6 @@ export default function DonationsHistoryPage() {
     load();
   }, []);
 
-  // signed urls das fotos
   useEffect(() => {
     const run = async () => {
       const missing = (donations ?? [])
@@ -132,14 +129,13 @@ export default function DonationsHistoryPage() {
     };
 
     if ((donations ?? []).length > 0) run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [donations]);
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-6">
+    <div className="max-w-5xl mx-auto py-2 px-2">
       <PageHeader
         title="Histórico"
-        subtitle="Consulte todas as suas doações finalizadas e acompanhe seus registros passados."
+        subtitle="Visualize suas doações passados."
       />
 
       {errorMsg ? (
@@ -149,7 +145,9 @@ export default function DonationsHistoryPage() {
       ) : null}
 
       {loading ? (
-        <div className="mt-6 bg-white rounded-2xl border p-6">Carregando...</div>
+        <div className="mt-6 bg-white rounded-2xl border p-6">
+          Carregando...
+        </div>
       ) : donations.length === 0 ? (
         <div className="mt-6 bg-white rounded-2xl border p-6 text-center">
           <p className="font-bold text-slate-900">

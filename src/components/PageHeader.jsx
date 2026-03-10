@@ -1,10 +1,13 @@
 export default function PageHeader({ title, subtitle, right }) {
   return (
-    <div className="flex items-end justify-between gap-4">
+    <div className="flex items-end justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">{title}</h1>
+        <h1 className="text-[2rem] leading-none font-extrabold text-slate-900">
+          {title}
+        </h1>
+
         {subtitle ? (
-          <p className="text-slate-500 mt-1">{subtitle}</p>
+          <p className="text-slate-500 mt-1.5 leading-snug">{subtitle}</p>
         ) : null}
       </div>
 

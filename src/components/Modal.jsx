@@ -12,25 +12,21 @@ export default function Modal({ open, onClose, children }) {
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* overlay */}
       <div
         className="absolute inset-0 bg-black/40"
         onClick={onClose}
-        onDragOver={(e) => e.preventDefault()} // ajuda o drop não “morrer”
-        onDrop={(e) => e.preventDefault()} // evita o browser abrir a imagem
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => e.preventDefault()}
       />
 
-      {/* wrapper */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        {/* modal */}
         <div
           className="w-full max-w-2xl bg-white shadow-2xl border border-slate-200 rounded-3xl overflow-hidden"
-          onClick={(e) => e.stopPropagation()} // ✅ ESSENCIAL
+          onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
-          onDragOver={(e) => e.preventDefault()} // ✅ mantém drag ativo
-          onDrop={(e) => e.preventDefault()} // ✅ evita conflito com overlay
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => e.preventDefault()}
         >
-          {/* topo só com X */}
           <div className="h-14 px-4 flex items-center justify-end border-b border-slate-100">
             <button
               type="button"
@@ -42,7 +38,6 @@ export default function Modal({ open, onClose, children }) {
             </button>
           </div>
 
-          {/* conteúdo com scroll */}
           <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto">
             {children}
           </div>

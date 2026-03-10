@@ -102,7 +102,6 @@ function DonationCard({ d, photoUrl }) {
   );
 }
 
-
 function StatusTabs({ value, onChange }) {
   const tabs = [
     { value: "ALL", label: "Todos" },
@@ -175,7 +174,6 @@ export default function DonationsMyPage() {
     };
 
     if ((donations ?? []).length > 0) run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [donations]);
 
   const filtered = useMemo(() => {
@@ -185,13 +183,12 @@ export default function DonationsMyPage() {
   }, [donations, statusFilter]);
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-6">
+    <div className="max-w-5xl mx-auto py-2 px-2">
       <PageHeader
         title="Minhas Doações"
         subtitle="Visualize, organize e acompanhe suas doações."
       />
 
-      {/* TROCA DO SELECT PELOS TABS */}
       <div className="mt-6">
         <StatusTabs value={statusFilter} onChange={setStatusFilter} />
       </div>

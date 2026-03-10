@@ -21,9 +21,12 @@ export default function ForgotPasswordPage() {
     const { error } = await requestPasswordReset(email.trim());
     setIsLoading(false);
 
-    if (error) return setErrorMsg("Não foi possível enviar o e-mail. Tente novamente.");
+    if (error)
+      return setErrorMsg("Não foi possível enviar o e-mail. Tente novamente.");
 
-    setSuccessMsg("Se esse e-mail existir, você receberá um link para redefinir sua senha.");
+    setSuccessMsg(
+      "Se esse e-mail existir, você receberá um link para redefinir sua senha.",
+    );
   };
 
   return (

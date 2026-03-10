@@ -16,7 +16,7 @@ export default function DonationForm({ onSuccess, onCancel }) {
   const [isDragging, setIsDragging] = useState(false);
 
   const isImageFile = (file) => file && file.type?.startsWith("image/");
-  const maxSizeBytes = 5 * 1024 * 1024; // ~5MB
+  const maxSizeBytes = 5 * 1024 * 1024;
 
   const pickFile = (file) => {
     if (!file) return;
@@ -50,7 +50,7 @@ export default function DonationForm({ onSuccess, onCancel }) {
   };
 
   const onDragOver = (e) => {
-    e.preventDefault(); // ✅ sem isso, o drop não acontece
+    e.preventDefault();
     e.stopPropagation();
     if (!isDragging) setIsDragging(true);
   };
@@ -65,7 +65,6 @@ export default function DonationForm({ onSuccess, onCancel }) {
     e.preventDefault();
     e.stopPropagation();
 
-    // garante que só desativa quando realmente saiu do dropzone
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
@@ -109,7 +108,6 @@ export default function DonationForm({ onSuccess, onCancel }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      {/* Headerzinho */}
       <div>
         <h2 className="text-2xl font-extrabold text-slate-900">Nova Doação</h2>
         <p className="text-slate-500 mt-1">
@@ -117,7 +115,6 @@ export default function DonationForm({ onSuccess, onCancel }) {
         </p>
       </div>
 
-      {/* Upload */}
       <div className="rounded-[2rem] bg-white border border-slate-100 shadow-sm p-6">
         <label className="block text-xs font-extrabold tracking-widest text-slate-400 uppercase">
           Upload da Foto
@@ -132,7 +129,6 @@ export default function DonationForm({ onSuccess, onCancel }) {
           disabled={loading}
         />
 
-        {/* dropzone */}
         <div
           role="button"
           tabIndex={0}
@@ -171,7 +167,6 @@ export default function DonationForm({ onSuccess, onCancel }) {
         </div>
       </div>
 
-      {/* Campos */}
       <div className="space-y-5 rounded-[2rem] bg-white border border-slate-100 shadow-sm p-6">
         <div className="space-y-2">
           <label className="text-xs font-extrabold tracking-widest text-slate-400 uppercase">

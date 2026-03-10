@@ -31,13 +31,10 @@ export default function DonationsPage() {
     if (error) setErrorMsg(error.message || "Erro ao carregar.");
   };
 
-  // carrega doações
   useEffect(() => {
     reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // checa perfil (primeira vez)
   useEffect(() => {
     const run = async () => {
       if (sessionLoading) return;
@@ -55,14 +52,14 @@ export default function DonationsPage() {
   }, [sessionLoading, user]);
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-6">
+    <div className="max-w-4xl mx-auto py-4 px-4">
       <ProfileIncompleteModal
         open={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
       />
 
       {errorMsg ? (
-        <div className="max-w-5xl mx-auto px-6 pt-6">
+        <div className="pt-4">
           <div className="rounded-2xl bg-red-50 text-red-700 border border-red-200 px-4 py-3">
             {errorMsg}
           </div>
@@ -70,7 +67,7 @@ export default function DonationsPage() {
       ) : null}
 
       {loading ? (
-        <div className="max-w-5xl mx-auto px-6 pt-6">
+        <div className="pt-4">
           <div className="rounded-2xl bg-white border p-6">Carregando...</div>
         </div>
       ) : (

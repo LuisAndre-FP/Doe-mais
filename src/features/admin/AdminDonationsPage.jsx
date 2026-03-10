@@ -81,7 +81,6 @@ function AdminDonationCard({
   return (
     <div className="rounded-[32px] bg-white border border-slate-100 shadow-sm p-6">
       <div className="flex flex-col md:flex-row gap-6">
-        {/* IMAGEM GRANDE */}
         <div className="relative w-full md:w-[260px] h-[170px] rounded-[28px] overflow-hidden bg-slate-50 border border-slate-100">
           {imgUrl ? (
             <img
@@ -95,15 +94,12 @@ function AdminDonationCard({
             </div>
           )}
 
-          {/* badge por cima */}
           <div className="absolute top-3 left-3">
             <StatusBadge status={d.status} />
           </div>
         </div>
 
-        {/* CONTEÚDO */}
         <div className="min-w-0 flex-1">
-          {/* topo: título + qtd */}
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <h3 className="text-2xl font-extrabold text-slate-900 truncate">
@@ -123,7 +119,6 @@ function AdminDonationCard({
             </span>
           </div>
 
-          {/* infos */}
           <div className="mt-4 grid gap-3 text-sm">
             <div className="flex items-start gap-2 text-slate-600">
               <MapPin className="h-4 w-4 mt-0.5 text-slate-400" />
@@ -171,7 +166,6 @@ function AdminDonationCard({
             ) : null}
           </div>
 
-          {/* botões */}
           <div className="mt-6 flex flex-wrap gap-3">
             {d.status === "PENDENTE" ? (
               <button
@@ -215,7 +209,6 @@ function AdminDonationCard({
   );
 }
 
-/** Modal (continua sendo usado APENAS para agendar/reagendar) */
 function Modal({ open, onClose, title, subtitle, children }) {
   useEffect(() => {
     if (!open) return;
@@ -298,7 +291,6 @@ function Toast({ open, type = "success", title, message, onClose }) {
   );
 }
 
-/** Confirm simples (NÃO usa teu Modal grandão) */
 function ConfirmDialog({
   open,
   title = "Confirmar",
@@ -386,24 +378,28 @@ export default function AdminDonationsPage() {
     message: "",
   });
 
-  const showToast = ({ type = "success", title, message }) => {
-    setToast({ open: true, type, title, message });
-  };
-  const closeToast = () => setToast((prev) => ({ ...prev, open: false }));
-
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [toCollect, setToCollect] = useState(null);
   const [collecting, setCollecting] = useState(false);
 
+  const today = new Date().toISOString().split("T")[0];
+
+  const showToast = ({ type = "success", title, message }) => {
+    setToast({ open: true, type, title, message });
+  };
+
+  const closeToast = () => setToast((prev) => ({ ...prev, open: false }));
+
   const fmtDate = (v) => (v ? new Date(v).toLocaleDateString("pt-BR") : "");
+
   const periodoLabel = (p) =>
     p === "MANHA"
       ? "Manhã"
       : p === "TARDE"
-      ? "Tarde"
-      : p === "NOITE"
-      ? "Noite"
-      : p;
+        ? "Tarde"
+        : p === "NOITE"
+          ? "Noite"
+          : p;
 
   const load = async () => {
     setErrorMsg("");
@@ -421,7 +417,6 @@ export default function AdminDonationsPage() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   useEffect(() => {
@@ -440,7 +435,6 @@ export default function AdminDonationsPage() {
     };
 
     if ((donations ?? []).length > 0) run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [donations]);
 
   const openSchedule = (d) => {
@@ -459,6 +453,15 @@ export default function AdminDonationsPage() {
         type: "error",
         title: "Data obrigatória",
         message: "Escolha uma data para a coleta.",
+      });
+      return;
+    }
+
+    if (coletaData < today) {
+      showToast({
+        type: "error",
+        title: "Data inválida",
+        message: "Não é possível agendar coleta para uma data passada.",
       });
       return;
     }
@@ -533,13 +536,12 @@ export default function AdminDonationsPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-6">
+    <div className="max-w-5xl mx-auto py-2 px-2">
       <PageHeader
         title="Gerenciamento de Doações"
         subtitle="Controle e organize todas as solicitações de doações."
       />
 
-      {/* TROCA DO SELECT PELOS TABS */}
       <div className="mt-6">
         <StatusTabs value={status} onChange={setStatus} />
       </div>
@@ -558,7 +560,9 @@ export default function AdminDonationsPage() {
 
       {!loading && donations.length === 0 ? (
         <div className="mt-6 rounded-2xl bg-white border p-6 text-center">
-          <p className="font-bold text-slate-900">Nenhuma doação nesse filtro</p>
+          <p className="font-bold text-slate-900">
+            Nenhuma doação nesse filtro
+          </p>
         </div>
       ) : null}
 
@@ -589,7 +593,6 @@ export default function AdminDonationsPage() {
         </div>
       ) : null}
 
-      {/* modal agendar */}
       <Modal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}
@@ -607,6 +610,7 @@ export default function AdminDonationsPage() {
             </label>
             <input
               type="date"
+              min={today}
               value={coletaData}
               onChange={(e) => setColetaData(e.target.value)}
               className="h-12 w-full rounded-2xl bg-slate-50 border border-transparent px-4 font-semibold text-slate-900
@@ -662,7 +666,6 @@ export default function AdminDonationsPage() {
         </div>
       </Modal>
 
-      {/* confirm simples (coletada) */}
       <ConfirmDialog
         open={confirmOpen}
         title="Concluir doação?"
@@ -676,7 +679,6 @@ export default function AdminDonationsPage() {
         onConfirm={confirmCollected}
       />
 
-      {/* toast */}
       <Toast
         open={toast.open}
         type={toast.type}

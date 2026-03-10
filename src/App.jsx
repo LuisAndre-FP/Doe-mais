@@ -21,19 +21,15 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* inicial */}
         <Route path="/" element={<Navigate to="/doacoes" replace />} />
 
-        {/* auth (sem layout) */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/cadastro" element={<RegisterPage />} />
         <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
         <Route path="/atualizar-senha" element={<UpdatePasswordPage />} />
 
-        {/* callback do google oauth (sem layout e sem protected) */}
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-        {/* logado (com layout) */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/doacoes" element={<DonationsPage />} />
@@ -41,14 +37,12 @@ export default function App() {
             <Route path="/historico" element={<Historico />} />
             <Route path="/perfil" element={<Perfil />} />
 
-            {/* admin dentro do layout também */}
             <Route element={<AdminRoute />}>
               <Route path="/admin" element={<AdminDonationsPage />} />
             </Route>
           </Route>
         </Route>
 
-        {/* fallback */}
         <Route path="*" element={<Navigate to="/doacoes" replace />} />
       </Routes>
     </BrowserRouter>

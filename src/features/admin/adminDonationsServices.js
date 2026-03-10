@@ -3,12 +3,14 @@ import { supabase } from "../../lib/supabaseClient";
 export async function listAllDonations(status = "ALL") {
   let q = supabase
     .from("donations")
-    .select(`
+    .select(
+      `
       id, user_id, descricao, quantidade, estado_item, foto_path,
       status, coleta_data, coleta_periodo, coleta_observacao,
       created_at, updated_at,
       profiles:profiles ( id, nome, email, telefone, endereco )
-    `)
+    `,
+    )
     .order("created_at", { ascending: false });
 
   if (status && status !== "ALL") {
@@ -20,7 +22,7 @@ export async function listAllDonations(status = "ALL") {
 
 export async function scheduleDonation(
   donationId,
-  { coleta_data, coleta_periodo, coleta_observacao }
+  { coleta_data, coleta_periodo, coleta_observacao },
 ) {
   return supabase
     .from("donations")

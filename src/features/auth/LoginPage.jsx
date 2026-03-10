@@ -20,7 +20,6 @@ export default function LoginPage() {
     });
   }, [navigate]);
 
-
   const handleGoogle = async () => {
     setErrorMsg("");
     setIsLoading(true);

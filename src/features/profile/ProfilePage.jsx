@@ -84,8 +84,7 @@ export default function Perfil() {
   if (!user) return <p className="p-6">Você precisa estar logado.</p>;
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-6">
-      {/* Header da página */}
+    <div className="max-w-5xl mx-auto py-2 px-2">
       <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Perfil</h1>
@@ -95,10 +94,8 @@ export default function Perfil() {
         </div>
       </div>
 
-      {/* Card central */}
       <div className="mt-6 mx-auto w-full max-w-[720px]">
         <div className="rounded-[32px] bg-white shadow-sm border border-emerald-100 overflow-hidden">
-          {/* Topo com avatar + nome/email */}
           <div className="px-8 pt-10 pb-8 text-center">
             <div className="mx-auto h-20 w-20 rounded-3xl bg-emerald-50 border border-emerald-100 grid place-items-center shadow-sm">
               <User2 className="h-9 w-9 text-emerald-600" />
@@ -113,7 +110,6 @@ export default function Perfil() {
             </p>
           </div>
 
-          {/* Corpo do formulário */}
           <div className="px-8 pb-10">
             <div className="space-y-6">
               <Field label="NOME">
@@ -179,7 +175,6 @@ export default function Perfil() {
         </div>
       </div>
 
-      {/* Painel Admin (só aparece se for ADMIN) */}
       {myRole === "ADMIN" ? <AdminUsersPanel /> : null}
     </div>
   );
@@ -219,15 +214,12 @@ function AdminUsersPanel() {
     setAudit(data ?? []);
   };
 
-  // Carrega quando abre modal (pra não ficar batendo request toda hora)
   useEffect(() => {
     if (openUsers) loadUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openUsers]);
 
   useEffect(() => {
     if (openAudit) loadAudit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openAudit]);
 
   const filteredAudit = useMemo(() => {
@@ -265,7 +257,6 @@ function AdminUsersPanel() {
 
   return (
     <div className="mt-10">
-      {/* Cards (igual tua img 3) */}
       <div className="grid gap-4">
         <AdminActionCard
           title="Controle de Usuários"
@@ -297,7 +288,6 @@ function AdminUsersPanel() {
         </div>
       ) : null}
 
-      {/* Modal Users (igual img 1) */}
       <ModalShell
         open={openUsers}
         onClose={() => setOpenUsers(false)}
@@ -369,7 +359,9 @@ function AdminUsersPanel() {
                               : "border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800",
                           ].join(" ")}
                         >
-                          {isAdmin ? "Alterrar para USER" : "Promover para ADMIN"}
+                          {isAdmin
+                            ? "Alterrar para USER"
+                            : "Promover para ADMIN"}
                         </button>
                       </div>
                     </div>
@@ -381,7 +373,6 @@ function AdminUsersPanel() {
         </div>
       </ModalShell>
 
-      {/* Modal Audit (igual img 2) */}
       <ModalShell
         open={openAudit}
         onClose={() => setOpenAudit(false)}
@@ -442,8 +433,6 @@ function AdminUsersPanel() {
     </div>
   );
 }
-
-/* ---------- UI pieces ---------- */
 
 function AdminActionCard({
   title,
