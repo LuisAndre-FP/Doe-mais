@@ -17,7 +17,7 @@ export async function listUsersProfiles({ q = "" } = {}) {
 export async function setUserRole(targetUserId, newRole) {
   return supabase.rpc("set_user_role", {
     target_user_id: targetUserId,
-    new_role: newRole, // "USER" | "ADMIN"
+    new_role: newRole, 
   });
 }
 
