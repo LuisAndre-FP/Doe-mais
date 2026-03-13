@@ -141,28 +141,6 @@ A aplicação está hospedada na **Vercel**.
 Link do projeto: doe-mais-lovat.vercel.app
 
 
----
-
-## 📂 Estrutura do Projeto
-src
-│
-├── components
-│ ├── Header
-│ ├── SideMenu
-│ └── Modal
-│
-├── layouts
-│ └── AppLayout
-│
-├── features
-│ ├── auth
-│ ├── donations
-│ ├── admin
-│ └── profile
-│
-├── hooks
-├── services
-└── App.jsx
 
 
 
