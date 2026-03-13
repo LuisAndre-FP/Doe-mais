@@ -85,7 +85,7 @@ export default function Perfil() {
 
   return (
     <div className="max-w-5xl mx-auto py-2 px-2">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Perfil</h1>
           <p className="text-slate-500 mt-1">
@@ -96,7 +96,7 @@ export default function Perfil() {
 
       <div className="mt-6 mx-auto w-full max-w-[720px]">
         <div className="rounded-[32px] bg-white shadow-sm border border-emerald-100 overflow-hidden">
-          <div className="px-8 pt-10 pb-8 text-center">
+          <div className="px-4 sm:px-8 pt-10 pb-8 text-center">
             <div className="mx-auto h-20 w-20 rounded-3xl bg-emerald-50 border border-emerald-100 grid place-items-center shadow-sm">
               <User2 className="h-9 w-9 text-emerald-600" />
             </div>
@@ -110,7 +110,7 @@ export default function Perfil() {
             </p>
           </div>
 
-          <div className="px-8 pb-10">
+          <div className="px-4 sm:px-8 pb-10">
             <div className="space-y-6">
               <Field label="NOME">
                 <input
@@ -184,12 +184,10 @@ function AdminUsersPanel() {
   const [openUsers, setOpenUsers] = useState(false);
   const [openAudit, setOpenAudit] = useState(false);
 
-  // Users
   const [qUsers, setQUsers] = useState("");
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
-  // Audit
   const [qAudit, setQAudit] = useState("");
   const [audit, setAudit] = useState([]);
   const [loadingAudit, setLoadingAudit] = useState(false);

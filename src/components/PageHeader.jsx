@@ -1,8 +1,8 @@
 export default function PageHeader({ title, subtitle, right }) {
   return (
-    <div className="flex items-end justify-between gap-3">
+    <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="text-[2rem] leading-none font-extrabold text-slate-900">
+        <h1 className="text-[1.75rem] sm:text-[2rem] leading-none font-extrabold text-slate-900">
           {title}
         </h1>
 

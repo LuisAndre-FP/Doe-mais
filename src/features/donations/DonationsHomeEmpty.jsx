@@ -12,7 +12,7 @@ export default function DonationsHomeEmpty({ onNewDonation }) {
   return (
     <div className="w-full">
       <div className="text-center pt-4 pb-5">
-        <h2 className="text-3xl font-black text-slate-900">
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 break-words">
           Olá, {name}! <span className="align-middle">👋</span>
         </h2>
         <p className="mt-1 text-slate-500 font-medium">
