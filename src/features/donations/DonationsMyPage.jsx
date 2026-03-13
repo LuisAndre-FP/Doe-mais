@@ -43,11 +43,11 @@ function DonationCard({ d, photoUrl }) {
         "rounded-[28px] bg-white",
         "border border-slate-200/60",
         "shadow-[0_10px_30px_-20px_rgba(2,6,23,0.35)]",
-        "px-6 py-5",
+        "px-4 sm:px-6 py-5",
       ].join(" ")}
     >
-      <div className="flex items-center gap-5">
-        <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
+      <div className="flex items-start gap-4">
+        <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
           {photoUrl ? (
             <img
               src={photoUrl}
@@ -62,9 +62,9 @@ function DonationCard({ d, photoUrl }) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="text-[17px] font-extrabold text-slate-900 truncate">
+              <h3 className="text-[16px] sm:text-[17px] font-extrabold text-slate-900 break-words">
                 {d.descricao}
               </h3>
 
@@ -111,27 +111,29 @@ function StatusTabs({ value, onChange }) {
   ];
 
   return (
-    <div className="inline-flex rounded-2xl bg-white border border-emerald-200 shadow-sm p-1">
-      {tabs.map((t) => {
-        const active = value === t.value;
-        return (
-          <button
-            key={t.value}
-            type="button"
-            onClick={() => onChange(t.value)}
-            className={[
-              "h-9 px-4 rounded-xl",
-              "text-[11px] font-extrabold tracking-widest uppercase",
-              "transition",
-              active
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50",
-            ].join(" ")}
-          >
-            {t.label}
-          </button>
-        );
-      })}
+    <div className="overflow-x-auto pb-1 -mx-2 px-2">
+      <div className="inline-flex rounded-2xl bg-white border border-emerald-200 shadow-sm p-1 min-w-max">
+        {tabs.map((t) => {
+          const active = value === t.value;
+          return (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => onChange(t.value)}
+              className={[
+                "h-9 px-4 rounded-xl",
+                "text-[11px] font-extrabold tracking-widest uppercase",
+                "transition",
+                active
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-slate-600 hover:bg-slate-50",
+              ].join(" ")}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

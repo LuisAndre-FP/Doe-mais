@@ -40,27 +40,29 @@ function StatusTabs({ value, onChange }) {
   ];
 
   return (
-    <div className="inline-flex rounded-2xl bg-white border border-emerald-200 shadow-sm p-1">
-      {tabs.map((t) => {
-        const active = value === t.value;
-        return (
-          <button
-            key={t.value}
-            type="button"
-            onClick={() => onChange(t.value)}
-            className={[
-              "h-9 px-4 rounded-xl",
-              "text-[11px] font-extrabold tracking-widest uppercase",
-              "transition",
-              active
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50",
-            ].join(" ")}
-          >
-            {t.label}
-          </button>
-        );
-      })}
+    <div className="overflow-x-auto pb-1 -mx-2 px-2">
+      <div className="inline-flex rounded-2xl bg-white border border-emerald-200 shadow-sm p-1 min-w-max">
+        {tabs.map((t) => {
+          const active = value === t.value;
+          return (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => onChange(t.value)}
+              className={[
+                "h-9 px-4 rounded-xl",
+                "text-[11px] font-extrabold tracking-widest uppercase",
+                "transition",
+                active
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-slate-600 hover:bg-slate-50",
+              ].join(" ")}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -79,8 +81,8 @@ function AdminDonationCard({
   const isScheduled = d.status === "AGENDADA";
 
   return (
-    <div className="rounded-[32px] bg-white border border-slate-100 shadow-sm p-6">
-      <div className="flex flex-col md:flex-row gap-6">
+    <div className="rounded-[32px] bg-white border border-slate-100 shadow-sm p-4 sm:p-6">
+      <div className="flex flex-col md:flex-row gap-5">
         <div className="relative w-full md:w-[260px] h-[170px] rounded-[28px] overflow-hidden bg-slate-50 border border-slate-100">
           {imgUrl ? (
             <img
@@ -100,9 +102,9 @@ function AdminDonationCard({
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="text-2xl font-extrabold text-slate-900 truncate">
+              <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 break-words">
                 {d.descricao}
               </h3>
 
@@ -121,19 +123,19 @@ function AdminDonationCard({
 
           <div className="mt-4 grid gap-3 text-sm">
             <div className="flex items-start gap-2 text-slate-600">
-              <MapPin className="h-4 w-4 mt-0.5 text-slate-400" />
+              <MapPin className="h-4 w-4 mt-0.5 text-slate-400 shrink-0" />
               <div className="min-w-0">
                 <p className="text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
                   Endereço de coleta
                 </p>
-                <p className="font-semibold text-slate-700 truncate">
+                <p className="font-semibold text-slate-700 break-words">
                   {donorAddress}
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-2 text-slate-600">
-              <Phone className="h-4 w-4 mt-0.5 text-slate-400" />
+              <Phone className="h-4 w-4 mt-0.5 text-slate-400 shrink-0" />
               <div>
                 <p className="text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
                   Telefone
@@ -144,7 +146,7 @@ function AdminDonationCard({
 
             {isScheduled && d.coleta_data ? (
               <div className="flex items-start gap-2 text-slate-600">
-                <CalendarDays className="h-4 w-4 mt-0.5 text-slate-400" />
+                <CalendarDays className="h-4 w-4 mt-0.5 text-slate-400 shrink-0" />
                 <div>
                   <p className="text-[11px] font-extrabold tracking-widest text-slate-400 uppercase">
                     Coleta agendada
@@ -166,12 +168,12 @@ function AdminDonationCard({
             ) : null}
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-col sm:flex-row flex-wrap gap-3">
             {d.status === "PENDENTE" ? (
               <button
                 type="button"
                 onClick={onSchedule}
-                className="h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
+                className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
               >
                 AGENDAR COLETA
               </button>
@@ -182,7 +184,7 @@ function AdminDonationCard({
                 <button
                   type="button"
                   onClick={onCollect}
-                  className="h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
+                  className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
                 >
                   MARCAR COMO COLETADA
                 </button>
@@ -190,7 +192,7 @@ function AdminDonationCard({
                 <button
                   type="button"
                   onClick={onSchedule}
-                  className="h-11 px-6 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-extrabold hover:bg-slate-100"
+                  className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-extrabold hover:bg-slate-100"
                 >
                   REAGENDAR
                 </button>

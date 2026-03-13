@@ -39,11 +39,11 @@ function DonationHistoryCard({ d, photoUrl }) {
         "rounded-[28px] bg-white",
         "border border-slate-200/60",
         "shadow-[0_10px_30px_-20px_rgba(2,6,23,0.35)]",
-        "px-6 py-5",
+        "px-4 sm:px-6 py-5",
       ].join(" ")}
     >
-      <div className="flex items-center gap-5">
-        <div className="h-16 w-16 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
+      <div className="flex items-start gap-4">
+        <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shrink-0">
           {photoUrl ? (
             <img
               src={photoUrl}
@@ -58,9 +58,9 @@ function DonationHistoryCard({ d, photoUrl }) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="text-[17px] font-extrabold text-slate-900 truncate">
+              <h3 className="text-[16px] sm:text-[17px] font-extrabold text-slate-900 break-words">
                 {d.descricao}
               </h3>
 

@@ -1,13 +1,23 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { Heart, PlusCircle, History, User, LogOut, Shield } from "lucide-react";
+import {
+  Heart,
+  PlusCircle,
+  History,
+  User,
+  LogOut,
+  Shield,
+  Menu,
+  X,
+} from "lucide-react";
 import { getMyRole } from "../features/admin/adminService";
 
-function MenuItem({ to, label, icon: Icon }) {
+function MenuItem({ to, label, icon: Icon, onClick }) {
   return (
     <NavLink
       to={to}
+      onClick={onClick}
       className={({ isActive }) =>
         [
           "w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200",
@@ -26,7 +36,24 @@ function MenuItem({ to, label, icon: Icon }) {
 
 export default function SideMenu() {
   const [role, setRole] = useState("USER");
+  const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   useEffect(() => {
     const run = async () => {
@@ -63,27 +90,30 @@ export default function SideMenu() {
     navigate("/login", { replace: true });
   };
 
-  return (
-    <aside
-      className={[
-        "fixed left-0 top-0 z-40",
-        "w-72 h-screen",
-        "bg-[#f3f5f4]",
-        "text-[#234338]",
-        "border-r border-[#e3ebe7]",
-        "shadow-[8px_0_24px_-18px_rgba(0,0,0,0.12)]",
-      ].join(" ")}
-    >
-      <div className="h-16 px-6 flex items-center border-b border-[#e3ebe7]">
+  const sidebarContent = (
+    <>
+      <div className="h-16 px-6 flex items-center justify-between border-b border-[#e3ebe7]">
         <span className="text-lg font-extrabold tracking-tight text-[#0b7a57]">
           DOE+
         </span>
+        <button
+          type="button"
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden h-9 w-9 rounded-xl flex items-center justify-center text-[#34584c] hover:bg-[#eaf4ef] transition"
+          aria-label="Fechar menu"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
-      <div className="px-4 py-5 h-[calc(100vh-64px)] flex flex-col">
+      <div className="px-4 py-5 h-[calc(100%-64px)] flex flex-col">
         <nav className="space-y-2">
           {links.map((item) => (
-            <MenuItem key={item.to} {...item} />
+            <MenuItem
+              key={item.to}
+              {...item}
+              onClick={() => setMobileOpen(false)}
+            />
           ))}
         </nav>
 
@@ -98,6 +128,45 @@ export default function SideMenu() {
           </button>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        className={[
+          "fixed top-0 right-0 z-[60] md:hidden",
+          "h-16 w-16 flex items-center justify-center",
+          "text-white",
+        ].join(" ")}
+        aria-label="Abrir menu"
+      >
+        <Menu className="h-6 w-6" />
+      </button>
+
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-[70] bg-black/40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <aside
+        className={[
+          "fixed left-0 top-0 z-[80] md:z-40",
+          "w-72 h-screen",
+          "bg-[#f3f5f4]",
+          "text-[#234338]",
+          "border-r border-[#e3ebe7]",
+          "shadow-[8px_0_24px_-18px_rgba(0,0,0,0.12)]",
+          "transition-transform duration-300 ease-in-out",
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+        ].join(" ")}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

@@ -8,8 +8,8 @@ export default function AppLayout() {
       <Header />
       <SideMenu />
 
-      <div className="ml-72 min-h-screen">
-        <main className="px-6 pt-4 pb-6 flex justify-center">
+      <div className="pt-16 md:pt-0 md:ml-72 min-h-screen">
+        <main className="px-4 pt-4 pb-6 flex justify-center">
           <div className="w-full max-w-5xl">
             <Outlet />
           </div>

@@ -13,7 +13,7 @@ export default function ProfileIncompleteModal({ open, onClose }) {
       />
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div className="w-full max-w-md rounded-3xl bg-white border border-emerald-100 shadow-2xl overflow-hidden">
-          <div className="p-8 text-center">
+          <div className="p-6 sm:p-8 text-center">
             <div className="mx-auto h-14 w-14 rounded-2xl bg-emerald-50 border border-emerald-100 grid place-items-center">
               <UserX className="h-7 w-7 text-emerald-700" />
             </div>

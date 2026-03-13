@@ -19,9 +19,9 @@ export default function Modal({ open, onClose, children }) {
         onDrop={(e) => e.preventDefault()}
       />
 
-      <div className="absolute inset-0 flex items-center justify-center p-4">
+      <div className="absolute inset-0 flex items-end sm:items-center justify-center sm:p-4">
         <div
-          className="w-full max-w-2xl bg-white shadow-2xl border border-slate-200 rounded-3xl overflow-hidden"
+          className="w-full sm:max-w-2xl bg-white shadow-2xl border border-slate-200 sm:rounded-3xl rounded-t-3xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           onDragOver={(e) => e.preventDefault()}
@@ -38,7 +38,7 @@ export default function Modal({ open, onClose, children }) {
             </button>
           </div>
 
-          <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto">
+          <div className="p-4 sm:p-6 max-h-[85vh] overflow-y-auto">
             {children}
           </div>
         </div>
