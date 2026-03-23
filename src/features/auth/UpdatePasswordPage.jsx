@@ -13,11 +13,14 @@ export default function UpdatePasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [linkInvalid, setLinkInvalid] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (!data.session)
+      if (!data.session) {
         setErrorMsg("Link inválido ou expirado. Solicite novamente.");
+        setLinkInvalid(true);
+      }
     });
   }, []);
 
@@ -74,7 +77,7 @@ export default function UpdatePasswordPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
-          disabled={!!errorMsg}
+          disabled={linkInvalid}
         />
 
         <PasswordInput
@@ -84,12 +87,12 @@ export default function UpdatePasswordPage() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           autoComplete="new-password"
-          disabled={!!errorMsg}
+          disabled={linkInvalid}
         />
 
         <button
           type="submit"
-          disabled={isLoading || !!errorMsg}
+          disabled={isLoading || linkInvalid}
           className="w-full h-12 rounded-2xl bg-emerald-600 text-white font-semibold hover:opacity-90 transition disabled:opacity-60"
         >
           {isLoading ? "Salvando..." : "Salvar nova senha"}

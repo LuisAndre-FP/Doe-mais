@@ -70,7 +70,7 @@ export async function listMyDonations() {
 
 export async function getDonationPhotoSignedUrl(
   fotoPath,
-  expiresInSeconds = 60 * 10,
+  expiresInSeconds = 60 * 60 * 2,
 ) {
   if (!fotoPath) return { data: null, error: null };
 

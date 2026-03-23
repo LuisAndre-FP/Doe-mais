@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   listAllDonations,
   markAsCollected,
@@ -77,6 +77,7 @@ function AdminDonationCard({
   onCollect,
   fmtDate,
   periodoLabel,
+  isWorking,
 }) {
   const isScheduled = d.status === "AGENDADA";
 
@@ -173,7 +174,8 @@ function AdminDonationCard({
               <button
                 type="button"
                 onClick={onSchedule}
-                className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
+                disabled={isWorking}
+                className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm disabled:opacity-60"
               >
                 AGENDAR COLETA
               </button>
@@ -184,7 +186,8 @@ function AdminDonationCard({
                 <button
                   type="button"
                   onClick={onCollect}
-                  className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm"
+                  disabled={isWorking}
+                  className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold hover:bg-emerald-700 shadow-sm disabled:opacity-60"
                 >
                   MARCAR COMO COLETADA
                 </button>
@@ -192,7 +195,8 @@ function AdminDonationCard({
                 <button
                   type="button"
                   onClick={onSchedule}
-                  className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-extrabold hover:bg-slate-100"
+                  disabled={isWorking}
+                  className="w-full sm:w-auto h-11 px-6 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 font-extrabold hover:bg-slate-100 disabled:opacity-60"
                 >
                   REAGENDAR
                 </button>
@@ -364,6 +368,7 @@ export default function AdminDonationsPage() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const [photoUrlMap, setPhotoUrlMap] = useState({});
+  const fetchedPathsRef = useRef(new Set());
 
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
@@ -429,9 +434,11 @@ export default function AdminDonationsPage() {
       const missing = (donations ?? [])
         .map((d) => d.foto_path)
         .filter(Boolean)
-        .filter((path) => !photoUrlMap[path]);
+        .filter((path) => !fetchedPathsRef.current.has(path));
 
       if (missing.length === 0) return;
+
+      missing.forEach((path) => fetchedPathsRef.current.add(path));
 
       const results = await Promise.all(
         missing.map(async (path) => {
@@ -463,6 +470,14 @@ export default function AdminDonationsPage() {
     setColetaPeriodo(d.coleta_periodo ?? "MANHA");
     setColetaObs(d.coleta_observacao ?? "");
     setScheduleOpen(true);
+  };
+
+  const closeSchedule = () => {
+    setScheduleOpen(false);
+    setSelectedDonation(null);
+    setColetaData("");
+    setColetaPeriodo("MANHA");
+    setColetaObs("");
   };
 
   const saveSchedule = async () => {
@@ -505,8 +520,7 @@ export default function AdminDonationsPage() {
       return;
     }
 
-    setScheduleOpen(false);
-    setSelectedDonation(null);
+    closeSchedule();
 
     showToast({
       type: "success",
@@ -607,6 +621,7 @@ export default function AdminDonationsPage() {
                 onCollect={() => setCollected(d)}
                 fmtDate={fmtDate}
                 periodoLabel={periodoLabel}
+                isWorking={scheduleOpen || confirmOpen || saving || collecting}
               />
             );
           })}
@@ -615,7 +630,7 @@ export default function AdminDonationsPage() {
 
       <Modal
         open={scheduleOpen}
-        onClose={() => setScheduleOpen(false)}
+        onClose={closeSchedule}
         title={
           selectedDonation?.status === "AGENDADA"
             ? "Reagendar coleta"
