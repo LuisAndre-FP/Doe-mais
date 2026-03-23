@@ -120,11 +120,26 @@ export default function DonationsHistoryPage() {
         .filter(Boolean)
         .filter((path) => !photoUrlMap[path]);
 
-      for (const path of missing) {
-        const { data, error } = await getDonationPhotoSignedUrl(path);
-        if (!error && data?.signedUrl) {
-          setPhotoUrlMap((prev) => ({ ...prev, [path]: data.signedUrl }));
-        }
+      if (missing.length === 0) return;
+
+      const results = await Promise.all(
+        missing.map(async (path) => {
+          const { data, error } = await getDonationPhotoSignedUrl(path);
+          return { path, data, error };
+        })
+      );
+
+      const newEntries = Object.fromEntries(
+        results
+          .filter(({ data, error }) => {
+            if (error) console.error("Erro ao carregar foto:", error);
+            return !error && data?.signedUrl;
+          })
+          .map(({ path, data }) => [path, data.signedUrl])
+      );
+
+      if (Object.keys(newEntries).length > 0) {
+        setPhotoUrlMap((prev) => ({ ...prev, ...newEntries }));
       }
     };
 
@@ -135,7 +150,7 @@ export default function DonationsHistoryPage() {
     <div className="max-w-5xl mx-auto py-2 px-2">
       <PageHeader
         title="Histórico"
-        subtitle="Visualize suas doações passados."
+        subtitle="Visualize suas doações passadas."
       />
 
       {errorMsg ? (
