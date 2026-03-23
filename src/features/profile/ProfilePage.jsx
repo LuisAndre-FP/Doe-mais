@@ -358,7 +358,7 @@ function AdminUsersPanel() {
                           ].join(" ")}
                         >
                           {isAdmin
-                            ? "Alterrar para USER"
+                            ? "Alterar para USER"
                             : "Promover para ADMIN"}
                         </button>
                       </div>
