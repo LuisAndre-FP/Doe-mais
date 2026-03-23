@@ -7,10 +7,17 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const run = async () => {
-      const { data } = await supabase.auth.getSession();
+      try {
+        const { data, error } = await supabase.auth.getSession();
 
-      if (data.session) navigate("/doacoes", { replace: true });
-      else navigate("/login", { replace: true });
+        if (error) throw error;
+
+        if (data.session) navigate("/doacoes", { replace: true });
+        else navigate("/login", { replace: true });
+      } catch (err) {
+        console.error("Erro ao finalizar autenticação:", err);
+        navigate("/login", { replace: true });
+      }
     };
 
     run();
