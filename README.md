@@ -1,146 +1,142 @@
-# Doe+ — Sistema Web de Gestão de Doações para ONGs
+# Doe+ — Plataforma de Gerenciamento de Doações
 
-O **Doe+** é um sistema web desenvolvido como Trabalho de Conclusão de Curso (TCC) com o objetivo de facilitar o gerenciamento de doações destinadas a organizações não governamentais (ONGs).
-
-A plataforma permite que usuários cadastrem doações, acompanhem o status das entregas e que administradores organizem o processo de coleta e distribuição dos itens doados.
+Aplicação web desenvolvida como Trabalho de Conclusão de Curso (TCC) para facilitar o processo de doação de itens, conectando doadores a uma equipe de coleta. O sistema permite que usuários registrem itens para doação, acompanhem o status de cada solicitação e visualizem seu histórico de contribuições.
 
 ---
 
-## 📌 Objetivo do Projeto
+## Funcionalidades
 
-O objetivo do sistema é oferecer uma solução simples e acessível para:
+### Doador
+- Cadastro e login com e-mail/senha ou conta Google
+- Registro de itens para doação com foto, descrição, quantidade e estado do item
+- Acompanhamento em tempo real do status de cada doação (Pendente → Agendada → Coletada)
+- Visualização do agendamento de coleta (data e período)
+- Histórico completo de doações finalizadas
+- Gerenciamento de perfil pessoal
 
-- registrar doações
-- acompanhar o status das doações
-- organizar coletas
-- facilitar a comunicação entre doadores e administradores
-
-O projeto foi desenvolvido com foco em **simplicidade, organização de dados e facilidade de uso**.
-
----
-
-## 🚀 Tecnologias Utilizadas
-
-### Frontend
-- React
-- Vite
-- TailwindCSS
-- React Router
-
-### Backend / Serviços
-- Supabase
-- PostgreSQL
-- Supabase Auth
-- Supabase Storage
-
-### Deploy
-- Vercel
+### Administrador
+- Painel exclusivo de gerenciamento de todas as doações
+- Agendamento e reagendamento de coletas com data, período e observações
+- Marcação de doações como coletadas
+- Controle de permissões de usuários (promover/rebaixar para ADMIN)
+- Registro de auditoria de ações administrativas
+- Filtro de doações por status
 
 ---
 
-## 🏗 Arquitetura do Sistema
+## Tecnologias
 
-O sistema segue uma arquitetura simples baseada em:
-Frontend (React)
-↓
-Supabase Auth (autenticação)
-↓
-Supabase Database (PostgreSQL)
-↓
-Supabase Storage (imagens das doações)
-
+| Camada | Tecnologia |
+|--------|-----------|
+| Frontend | [React 19](https://react.dev/) + [Vite 7](https://vite.dev/) |
+| Estilização | [Tailwind CSS](https://tailwindcss.com/) |
+| Backend / Banco de dados | [Supabase](https://supabase.com/) (PostgreSQL + Auth + Storage) |
+| Roteamento | [React Router DOM v7](https://reactrouter.com/) |
+| Ícones | [Lucide React](https://lucide.dev/) |
 
 ---
 
-## 🔐 Autenticação
+## Estrutura do Projeto
 
-O sistema utiliza **Supabase Auth** com:
-
-- Login com Google
-- Login com Email e Senha
-- Confirmação de email
-
-Cada usuário possui um perfil com:
-
-- nome
-- telefone
-- endereço
-
----
-
-## 👤 Tipos de Usuário
-
-O sistema possui dois tipos de usuários:
-
-### Usuário (USER)
-Pode:
-
-- cadastrar doações
-- visualizar histórico de doações
-- acompanhar status da coleta
-
-### Administrador (ADMIN)
-Pode:
-
-- visualizar todas as doações
-- filtrar doações pendentes
-- agendar coleta
-- marcar doações como coletadas
+```
+src/
+├── components/          # Componentes reutilizáveis
+│   ├── AdminRoute.jsx   # Guard de rota para admins
+│   ├── ProtectedRoute.jsx
+│   ├── SideMenu.jsx
+│   ├── Modal.jsx
+│   └── PageHeader.jsx
+├── constants/
+│   └── donations.js     # Constantes de STATUS, PERIODO e ROLE
+├── features/
+│   ├── admin/           # Painel administrativo
+│   ├── auth/            # Login, cadastro, recuperação de senha
+│   ├── donations/       # Fluxo de doações do usuário
+│   └── profile/         # Perfil do usuário
+├── hooks/
+│   ├── useSession.js    # Gerenciamento de sessão Supabase
+│   └── useRole.js       # Controle de permissão por role
+├── layouts/
+│   └── AppLayout.jsx    # Layout autenticado com sidebar
+└── lib/
+    └── supabaseClient.js
+```
 
 ---
 
-## 📦 Funcionalidades
+## Rotas
 
-### Cadastro de Doações
-O usuário pode registrar uma doação informando:
-
-- foto do item
-- descrição
-- quantidade
-- nível de uso
-
----
-
-### Histórico de Doações
-
-Cada doação possui um status:
-
-- **PENDENTE** → aguardando análise
-- **AGENDADA** → coleta agendada
-- **COLETADA** → item coletado
+| Rota | Acesso | Descrição |
+|------|--------|-----------|
+| `/login` | Público | Tela de login |
+| `/cadastro` | Público | Tela de cadastro |
+| `/esqueci-senha` | Público | Recuperação de senha |
+| `/atualizar-senha` | Público | Redefinição de senha |
+| `/doacoes` | Autenticado | Fazer nova doação |
+| `/minhas-doacoes` | Autenticado | Acompanhar minhas doações |
+| `/historico` | Autenticado | Histórico de doações coletadas |
+| `/perfil` | Autenticado | Perfil do usuário |
+| `/admin` | Admin | Gerenciamento de doações |
 
 ---
 
-### Painel Administrativo
+## Como Executar Localmente
 
-Administradores podem:
+### Pré-requisitos
+- Node.js 18+
+- Uma conta no [Supabase](https://supabase.com/) com projeto criado
 
-- visualizar todas as doações
-- filtrar doações pendentes
-- agendar coletas
-- atualizar status das doações
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/LuisAndre-FP/Doe-mais.git
+cd Doe-mais
+```
+
+### 2. Instale as dependências
+
+```bash
+npm install
+```
+
+### 3. Configure as variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+VITE_SUPABASE_URL=sua_url_do_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+```
+
+As credenciais estão disponíveis em **Settings → API** no painel do Supabase.
+
+### 4. Inicie o servidor de desenvolvimento
+
+```bash
+npm run dev
+```
+
+O app estará disponível em `http://localhost:5173`.
 
 ---
 
-## 📱 Responsividade
+## Scripts Disponíveis
 
-O sistema foi desenvolvido para funcionar em diferentes dispositivos:
-
-- Desktop
-- Tablet
-- Smartphones
-
-Utilizando **TailwindCSS** com abordagem **mobile-first**.
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Inicia o servidor de desenvolvimento |
+| `npm run build` | Gera o build de produção |
+| `npm run preview` | Visualiza o build de produção localmente |
+| `npm run lint` | Executa o ESLint |
 
 ---
 
-## ☁ Deploy
+## Configuração do Supabase
 
-A aplicação está hospedada na **Vercel**.
+O projeto utiliza os seguintes recursos do Supabase:
 
-Link do projeto: doe-mais-lovat.vercel.app
+- **Authentication** — login com e-mail/senha e OAuth com Google
+- **Database (PostgreSQL)** — tabelas `donations` e `profiles` com Row Level Security (RLS) configurado
+- **Storage** — bucket `donation-photos` para armazenamento das fotos dos itens
 
-
-
-
-
+> As políticas de RLS garantem que cada usuário acessa apenas seus próprios dados, enquanto administradores têm acesso completo.
