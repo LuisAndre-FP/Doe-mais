@@ -14,7 +14,6 @@ export default function AdminRoute() {
 
       setRoleLoading(true);
       const { data, error } = await getMyRole();
-      console.log("ADMIN ROUTE | role data:", data, "error:", error);
       setRole(error ? "" : String(data ?? "").trim());
       setRoleLoading(false);
     };
