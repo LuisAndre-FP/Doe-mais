@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { listMyDonations, getDonationPhotoSignedUrl } from "./donationsService";
 import PageHeader from "../../components/PageHeader";
 
@@ -91,6 +91,7 @@ export default function DonationsHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [photoUrlMap, setPhotoUrlMap] = useState({});
+  const fetchedPathsRef = useRef(new Set());
 
   const load = async () => {
     setLoading(true);
@@ -118,7 +119,9 @@ export default function DonationsHistoryPage() {
       const missing = (donations ?? [])
         .map((d) => d.foto_path)
         .filter(Boolean)
-        .filter((path) => !photoUrlMap[path]);
+        .filter((path) => !fetchedPathsRef.current.has(path));
+
+      missing.forEach((path) => fetchedPathsRef.current.add(path));
 
       if (missing.length === 0) return;
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   listMyDonations,
   getDonationPhotoSignedUrl,
@@ -144,6 +144,7 @@ export default function DonationsMyPage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [photoUrlMap, setPhotoUrlMap] = useState({});
+  const fetchedPathsRef = useRef(new Set());
 
   const load = async () => {
     setLoading(true);
@@ -165,7 +166,9 @@ export default function DonationsMyPage() {
       const missing = (donations ?? [])
         .map((d) => d.foto_path)
         .filter(Boolean)
-        .filter((path) => !photoUrlMap[path]);
+        .filter((path) => !fetchedPathsRef.current.has(path));
+
+      missing.forEach((path) => fetchedPathsRef.current.add(path));
 
       if (missing.length === 0) return;
 
@@ -195,8 +198,10 @@ export default function DonationsMyPage() {
 
   const filtered = useMemo(() => {
     const arr = donations ?? [];
-    if (statusFilter === "ALL") return arr;
-    return arr.filter((d) => d.status === statusFilter);
+    const result = statusFilter === "ALL" ? arr : arr.filter((d) => d.status === statusFilter);
+    return result
+      .slice()
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }, [donations, statusFilter]);
 
   return (
@@ -230,16 +235,13 @@ export default function DonationsMyPage() {
 
       {!loading && filtered.length > 0 ? (
         <div className="mt-6 grid gap-4">
-          {filtered
-            .slice()
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-            .map((d) => (
-              <DonationCard
-                key={d.id}
-                d={d}
-                photoUrl={d.foto_path ? photoUrlMap[d.foto_path] : null}
-              />
-            ))}
+          {filtered.map((d) => (
+            <DonationCard
+              key={d.id}
+              d={d}
+              photoUrl={d.foto_path ? photoUrlMap[d.foto_path] : null}
+            />
+          ))}
         </div>
       ) : null}
     </div>
