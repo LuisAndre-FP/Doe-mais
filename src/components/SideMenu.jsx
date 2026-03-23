@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { getMyRole } from "../features/admin/adminService";
+import { useSession } from "../hooks/useSession";
 
 function MenuItem({ to, label, icon: Icon, onClick }) {
   return (
@@ -39,6 +40,7 @@ export default function SideMenu() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { session } = useSession();
 
   useEffect(() => {
     setMobileOpen(false);
@@ -56,12 +58,16 @@ export default function SideMenu() {
   }, [mobileOpen]);
 
   useEffect(() => {
+    if (!session) {
+      setRole("USER");
+      return;
+    }
     const run = async () => {
       const { data, error } = await getMyRole();
-      if (!error && data) setRole(data);
+      if (!error && data) setRole(String(data).trim());
     };
     run();
-  }, []);
+  }, [session]);
 
   const links = useMemo(() => {
     const items = [
